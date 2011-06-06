@@ -1,0 +1,9 @@
+%% -*- mode: erlang -*-
+{application, jerome,
+ [{description, "Rich-text processor"},
+  {vsn, "0.1.0"},
+  {modules, [
+            ]},
+  {applications, [kernel, stdlib]},
+  {registered, []}
+ ]}.
