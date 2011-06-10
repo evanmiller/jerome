@@ -23,6 +23,10 @@ scan([], Scanned, _, in_text) ->
                                 {last_row, Pos};
                             "cell" ->
                                 {end_cell, Pos};
+                            "listtext" ->
+                                {list_text, Pos};
+                            "par" ->
+                                {new_paragraph, Pos};
                             Code ->
                                 {control_word, Pos, Code}
                         end;
