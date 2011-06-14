@@ -23,7 +23,16 @@ generate([{list, ListItems}|Rest], Acc) ->
 generate([{list_item, ListItem}|Rest], Acc) ->
     generate(Rest, lists:reverse(["{\\listtext\\uc0\\u9642}", generate(ListItem, [])], Acc));
 generate([{paragraph, _}|Rest], Acc) ->
-    generate(Rest, ["\\\n"|Acc]).
+    generate(Rest, ["\\\n"|Acc]);
+generate([{image, ImageBinary}|Rest], Acc) when is_binary(ImageBinary) ->
+    {PictType, Width, Height} = image_info(ImageBinary),
+    generate(Rest, lists:reverse(["{\\*\\shppict {\\pict ",
+                "\\picw", integer_to_list(Width), "\\pich", integer_to_list(Height), 
+                PictType, "\\bin", integer_to_list(byte_size(ImageBinary)), " ",
+                ImageBinary, "}}"], Acc)).
+
+image_info(<<137, $P, $N, $G, $\r, $\n, 26, $\n, _Length:32, $I, $H, $D, $R, Width:32, Height:32>>) ->
+    {"\\pngblip", Width, Height}.
 
 write_attributed_text(Text, [bold|Rest]) ->
     ["\\b ", write_attributed_text(Text, Rest), "\\b0 "];

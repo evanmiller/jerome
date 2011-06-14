@@ -25,7 +25,8 @@ Terminals
         text
         header_cell_start
         cell_delimiter
-        hyperlink
+        url
+        image
         double_quote
         caret
         tilde.
@@ -63,11 +64,12 @@ NonEmptyTextElements -> NonEmptyTextElements TextElement : '$1' ++ ['$2'].
 TextElement -> text : '$1'.
 TextElement -> punctuation : '$1'.
 TextElement -> double_quote : '$1'.
+TextElement -> image : '$1'.
 TextElement -> single_star NonEmptyTextElements single_star : {strong, '$2'}.
 TextElement -> double_star NonEmptyTextElements double_star : {bold, '$2'}.
 TextElement -> single_underscore NonEmptyTextElements single_underscore : {em, '$2'}.
 TextElement -> double_underscore NonEmptyTextElements double_underscore : {italic, '$2'}.
-TextElement -> double_quote NonEmptyLinkElements double_quote hyperlink : {hyperlink, '$2', '$4'}.
+TextElement -> double_quote NonEmptyLinkElements double_quote url : {hyperlink, '$2', '$4'}.
 TextElement -> caret NonEmptyTextElements caret : {superscript, '$2'}.
 TextElement -> tilde NonEmptyTextElements tilde : {subscript, '$2'}.
 

@@ -29,7 +29,13 @@ generate([{blockcode, Ast}|Rest], Acc) -> % TODO
 generate([{preformatted, Ast}|Rest], Acc) ->
     generate(Rest, lists:reverse(["<pre>", generate(Ast, []), "</pre>"], Acc));
 generate([{heading, Level, Ast}|Rest], Acc) ->
-    generate(Rest, lists:reverse(["<h"++integer_to_list(Level)++">", generate(Ast, []), "</h"++integer_to_list(Level)++">"], Acc)).
+    generate(Rest, lists:reverse(["<h", integer_to_list(Level), ">", generate(Ast, []), 
+                "</h", integer_to_list(Level), ">"], Acc));
+generate([{image, ImageURL}|Rest], Acc) when is_list(ImageURL) ->
+    generate(Rest, lists:reverse(["<img src=\"", ImageURL, "\" />"], Acc));
+generate([{image, ImageBinary}|Rest], Acc) when is_binary(ImageBinary) ->
+    generate(Rest, lists:reverse(["<img src=\"data:", jerome:image_mime_type(ImageBinary), 
+                ";base64,", base64:encode_to_string(ImageBinary), "\" />"], Acc)).
 
 write_attributed_text(Text, [bold|Rest]) ->
     ["<strong>", write_attributed_text(Text, Rest), "</strong>"];

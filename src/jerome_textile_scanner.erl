@@ -11,8 +11,10 @@ scan([], Scanned, _, _) ->
             lists:map(fun
                     ({text, Pos, Text}) ->
                         {text, Pos, lists:reverse(Text)};
-                    ({hyperlink, Pos, Link}) ->
-                        {hyperlink, Pos, lists:reverse(Link)};
+                    ({url, Pos, Link}) ->
+                        {url, Pos, lists:reverse(Link)};
+                    ({image, Pos, Link}) ->
+                        {image, Pos, lists:reverse(Link)};
                     (Token) ->
                         Token
                 end, Scanned))};
@@ -64,16 +66,23 @@ scan("|_. "++T, Scanned, {Row, Column} = Pos, _) ->
 scan("|"++T, Scanned, {Row, Column} = Pos, _) ->
     scan(T, [{cell_delimiter, Pos}|Scanned], {Row, Column + 1}, inline);
 scan("\":http://"++T, Scanned, {Row, Column} = Pos, inline) ->
-    scan(T, [{hyperlink, {Row, Column + 2}, lists:reverse("http://")}, {double_quote, Pos}|Scanned], 
+    scan(T, lists:reverse([{double_quote, Pos}, {url, {Row, Column + 2}, lists:reverse("http://")}], Scanned), 
         {Row, Column + length("\":http://")}, inlink);
 scan("\""++T, Scanned, {Row, Column} = Pos, inline) ->
     scan(T, [{double_quote, Pos, [$"]}|Scanned], {Row, Column + 1}, inline);
+scan("!http://"++T, Scanned, {Row, Column} = Pos, inline) ->
+    scan(T, [{image, Pos, lists:reverse("http://")}|Scanned],
+        {Row, Column + length("!http://")}, inimage);
+scan("!"++T, Scanned, {Row, Column}, inimage) ->
+    scan(T, Scanned, {Row, Column + 1}, inline);
+scan([H|T], [{url, IPos, Link}|Scanned], {Row, Column}, inimage) ->
+    scan(T, [{url, IPos, [H|Link]}|Scanned], {Row, Column + 1}, inimage);
 scan(" "++T, Scanned, {Row, Column} = Pos, inlink) ->
     scan(T, [{text, Pos, " "}|Scanned], {Row, Column + 1}, inline);
 scan(". "++T, Scanned, {Row, Column} = Pos, inlink) ->
     scan(T, [{text, Pos, ". "}|Scanned], {Row, Column + 2}, inline);
-scan([H|T], [{hyperlink, HPos, Link}|Scanned], {Row, Column}, inlink) ->
-    scan(T, [{hyperlink, HPos, [H|Link]}|Scanned], {Row, Column}, inlink);
+scan([H|T], [{url, HPos, Link}|Scanned], {Row, Column}, inlink) ->
+    scan(T, [{url, HPos, [H|Link]}|Scanned], {Row, Column}, inlink);
 scan([H|T], [{text, TPos, Text}|Scanned], {Row, Column}, inline) ->
     scan(T, [{text, TPos, [H|Text]}|Scanned], {Row, Column + 1}, inline);
 scan([H|T], Scanned, {Row, Column} = Pos, inline) ->

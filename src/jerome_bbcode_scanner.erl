@@ -48,6 +48,10 @@ scan([H|T], [{url_value, UPos, Value}|Scanned], {Row, Column}, in_url) ->
     scan(T, [{url_value, UPos, [H|Value]}|Scanned], {Row, Column + 1}, in_url);
 scan([H|T], Scanned, {Row, Column} = Pos, in_url) ->
     scan(T, [{url_value, Pos, [H]}|Scanned], {Row, Column + 1}, in_url);
+scan("[img]"++T, Scanned, {Row, Column} = Pos, text) ->
+    scan(T, [{open_img, Pos}|Scanned], {Row, Column + length("[img]")}, text);
+scan("[/img]"++T, Scanned, {Row, Column} = Pos, text) ->
+    scan(T, [{close_img, Pos}|Scanned], {Row, Column + length("[/img]")}, text);
 scan("[quote]"++T, Scanned, {Row, Column} = Pos, text) ->
     scan(T, [{open_quote, Pos}|Scanned], {Row, Column + length("[quote]")}, text);
 scan("[/quote]"++T, Scanned, {Row, Column} = Pos, text) ->

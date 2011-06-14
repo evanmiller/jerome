@@ -22,6 +22,8 @@ Terminals
         open_url_equals
         url_value
         close_url
+        open_img
+        close_img
         open_quote
         close_quote
         open_code
@@ -52,6 +54,7 @@ Elements -> open_superscript Elements close_superscript : {superscript, '$2'}.
 Elements -> open_subscript Elements close_subscript : {subscript, '$2'}.
 Elements -> open_url text close_url : {hyperlink, '$2'}.
 Elements -> open_url_equals url_value Elements close_url : {hyperlink, '$2', '$3'}.
+Elements -> open_img text close_img : {image, '$2'}.
 Elements -> open_quote Elements close_quote : {quote, '$2'}.
 Elements -> open_code Elements close_code : {code, '$2'}.
 Elements -> open_list ListItems close_list : {list, '$2'}.

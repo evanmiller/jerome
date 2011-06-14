@@ -2,19 +2,19 @@
 
 -include("jerome.hrl").
 
--export([consume/1]).
+-export([consume/2]).
 
 recognize_word("fldinst") -> true;
 recognize_word(_) -> false.
 
-consume(Binary) when is_binary(Binary) ->
-    {ok, Tokens} = jerome_rtf_scanner:scan(binary_to_list(Binary)),
+consume(Binary, ImageFun) when is_binary(Binary) ->
+    {ok, Tokens} = jerome_rtf_scanner:scan(unicode:characters_to_list(Binary)),
     {ok, ParseTree} = jerome_rtf_parser:parse(Tokens),
     PrunedTree = prune(ParseTree),
-    process_tree(PrunedTree).
+    process_tree(PrunedTree, ImageFun).
 
-process_tree(PrunedTree) ->
-    {Ast, _Context} = process_tree(PrunedTree, [], #jerome_ctx{}),
+process_tree(PrunedTree, ImageFun) ->
+    {Ast, _Context} = process_tree(PrunedTree, [], #jerome_ctx{ image_fun = ImageFun }),
     Ast.
 
 process_tree([], Acc, Context) ->
@@ -57,6 +57,10 @@ process_tree([{control_word, _, "pard"}|Rest], Acc, Context) ->
     process_tree(Rest, Acc, Context#jerome_ctx{ paragraph_alignment = left, table = false });
 process_tree([{control_word, _, "intbl"}|Rest], Acc, Context) ->
     process_tree(Rest, Acc, Context#jerome_ctx{ table = true });
+process_tree([{group, [{control_word, _, "NeXTGraphic"}, 
+                {text, _, Graphic}|_]}|Rest], Acc, Context) ->
+    {ok, Image} = (Context#jerome_ctx.image_fun)(Graphic),
+    process_tree(Rest, [{image, Image}|Acc], Context);
 process_tree([{table_row, Tree}|Rest], [{table, Rows}|Acc], Context) ->
     {Ast, Context1} = process_tree(Tree, [], Context),
     process_tree(Rest, [{table, Rows ++ [{table_row, Ast}]}|Acc], Context1);

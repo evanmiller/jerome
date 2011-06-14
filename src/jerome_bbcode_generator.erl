@@ -29,7 +29,10 @@ generate([{blockcode, Ast}|Rest], Acc) ->
 generate([{preformatted, Ast}|Rest], Acc) ->
     generate(Rest, lists:reverse(["[code]", generate(Ast, []), "[/pre]"], Acc));
 generate([{heading, Level, Ast}|Rest], Acc) ->
-    generate(Rest, lists:reverse(["[h"++integer_to_list(Level)++"]", generate(Ast, []), "[/h"++integer_to_list(Level)++"]"], Acc)).
+    generate(Rest, lists:reverse(["[h", integer_to_list(Level), "]", generate(Ast, []), 
+                "[/h", integer_to_list(Level), "]"], Acc));
+generate([{image, ImageURL}|Rest], Acc) when is_list(ImageURL) ->
+    generate(Rest, lists:reverse(["[img]", ImageURL, "[/img]"], Acc)).
 
 write_attributed_text(Text, [bold|Rest]) ->
     ["[b]", write_attributed_text(Text, Rest), "[/b]"];

@@ -121,8 +121,11 @@ scan([_H|T], Scanned, {Row, Column}, State) when State =:= in_word; State =:= in
 scan([H|T], [{text, TPos, Text}|Scanned], {Row, Column}, in_text) ->
     scan(T, [{text, TPos, [H|Text]}|Scanned], {Row, Column + 1}, in_text);
 
-scan([H|T], Scanned, {Row, Column} = Pos, in_text) ->
-    scan(T, [{text, Pos, [H]}|Scanned], {Row, Column+1}, in_text).
+scan([H|T], Scanned, {Row, Column} = Pos, in_text) when H =< 127->
+    scan(T, [{text, Pos, [H]}|Scanned], {Row, Column+1}, in_text);
+
+scan([_H|T], Scanned, {Row, Column}, in_text) -> % RTFD inserts some useless Unicode
+    scan(T, Scanned, {Row, Column+1}, in_text).
 
 
 

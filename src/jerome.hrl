@@ -10,5 +10,6 @@
         ansi_code_page = undefined,
         table = false,
         unicode_size = 1,
-        double_quote_count = 0
+        double_quote_count = 0,
+        image_fun
     }).

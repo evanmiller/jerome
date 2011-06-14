@@ -2,15 +2,15 @@
 
 -include("jerome.hrl").
 
--export([consume/1]).
+-export([consume/2]).
 
-consume(Binary) when is_binary(Binary) ->
+consume(Binary, ImageFun) when is_binary(Binary), is_function(ImageFun)  ->
     {ok, Tokens} = jerome_textile_scanner:scan(binary_to_list(Binary)),
     {ok, ParseTree} = jerome_textile_parser:parse(Tokens),
-    process_tree(ParseTree).
+    process_tree(ParseTree, ImageFun).
 
-process_tree(Tree) ->
-    process_tree(Tree, [], #jerome_ctx{}).
+process_tree(Tree, ImageFun) ->
+    process_tree(Tree, [], #jerome_ctx{ image_fun = ImageFun }).
 
 process_tree([], Acc, _) ->
     jerome:consolidate(lists:reverse(Acc));
@@ -67,10 +67,14 @@ process_tree([{punctuation, _, " x "}|Rest], Acc, Context) ->
     process_tree(Rest, [{text, [$\ , 16#00D7, $\ ], Props}|Acc], Context);
 process_tree([{newline, _}|Rest], Acc, _Context) ->
     process_tree(Rest, [{paragraph, left}|Acc], #jerome_ctx{});
-process_tree([{hyperlink, _, Elements, {hyperlink, _, Link}}|Rest], Acc, Context) ->
+process_tree([{hyperlink, _, Elements, {url, _, Link}}|Rest], Acc, Context) ->
     Ast = process_tree(Elements, [], Context#jerome_ctx{ hyperlink = Link }),
     process_tree(Rest, lists:reverse(Ast, Acc), Context);
 process_tree([{double_quote, _, _}|Rest], Acc, #jerome_ctx{ double_quote_count = Count } = Context) ->
-    process_tree(Rest, [{text, [16#201C + (Count rem 2)], jerome:text_properties(Context)}|Acc], Context#jerome_ctx{ double_quote_count = Count + 1 });
+    process_tree(Rest, [{text, [16#201C + (Count rem 2)], jerome:text_properties(Context)}|Acc], 
+        Context#jerome_ctx{ double_quote_count = Count + 1 });
+process_tree([{image, _, ImageURL}|Rest], Acc, #jerome_ctx{ image_fun = ImageFun } = Context) ->
+    {ok, ImageResult} = ImageFun(ImageURL),
+    process_tree(Rest, [{image, ImageResult}|Acc], Context);
 process_tree([{text, _, Text}|Rest], Acc, Context) ->
     process_tree(Rest, [{text, Text, jerome:text_properties(Context)}|Acc], Context).
