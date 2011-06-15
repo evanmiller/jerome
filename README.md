@@ -6,10 +6,10 @@ bold, italic, lists, tables, and hyperlinks. At present the number of supported
 formats is small. Usage:
 
     % Read
-    RichText = jerome:read("/path/to/file.rtf", rtf)
+    RichText = jerome:parse("/path/to/file.rtf", rtf)
 
     % Write
-    jerome:write(RichText, "/path/to/file.html", html)
+    {ok, IOList} = jerome:generate(RichText, html)
 
 
 Available formats:

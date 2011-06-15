@@ -6,8 +6,8 @@
 
 % Jerome - a rich-text reader/writer
 
-parse(Path, Format) ->
-    parse(Path, Format, fun(Img) -> {ok, Img} end).
+parse(PathOrBinary, Format) ->
+    parse(PathOrBinary, Format, fun(Img) -> {ok, Img} end).
 
 parse(Path, Format, ImageFun) when is_list(Path) ->
     {ok, Binary} = file:read_file(Path),
