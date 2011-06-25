@@ -31,7 +31,7 @@ generate([{image, ImageBinary}|Rest], Acc) when is_binary(ImageBinary) ->
                 PictType, "\\bin", integer_to_list(byte_size(ImageBinary)), " ",
                 ImageBinary, "}}"], Acc)).
 
-image_info(<<137, $P, $N, $G, $\r, $\n, 26, $\n, _Length:32, $I, $H, $D, $R, Width:32, Height:32>>) ->
+image_info(<<137, $P, $N, $G, $\r, $\n, 26, $\n, _Length:32, $I, $H, $D, $R, Width:32, Height:32, _/binary>>) ->
     {"\\pngblip", Width, Height}.
 
 write_attributed_text(Text, [bold|Rest]) ->
