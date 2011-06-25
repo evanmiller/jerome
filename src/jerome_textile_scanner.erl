@@ -86,4 +86,6 @@ scan([H|T], [{url, HPos, Link}|Scanned], {Row, Column}, inlink) ->
 scan([H|T], [{text, TPos, Text}|Scanned], {Row, Column}, inline) ->
     scan(T, [{text, TPos, [H|Text]}|Scanned], {Row, Column + 1}, inline);
 scan([H|T], Scanned, {Row, Column} = Pos, inline) ->
+    scan(T, [{text, Pos, [H]}|Scanned], {Row, Column + 1}, inline);
+scan([H|T], Scanned, {Row, Column} = Pos, newline) ->
     scan(T, [{text, Pos, [H]}|Scanned], {Row, Column + 1}, inline).

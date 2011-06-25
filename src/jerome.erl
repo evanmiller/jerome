@@ -13,12 +13,12 @@ parse(Path, Format, ImageFun) when is_list(Path) ->
     {ok, Binary} = file:read_file(Path),
     parse(Binary, Format, ImageFun);
 
-parse(Binary, Format, ImageFun) when is_binary(Binary) ->
-    case Format of
-        bbcode -> jerome_bbcode_consumer:consume(Binary, ImageFun);
-        rtf -> jerome_rtf_consumer:consume(Binary, ImageFun);
-        textile -> jerome_textile_consumer:consume(Binary, ImageFun)
-    end.
+parse(Binary, bbcode, ImageFun) when is_binary(Binary) ->
+    jerome_bbcode_consumer:consume(Binary, ImageFun);
+parse(Binary, rtf, ImageFun) when is_binary(Binary) ->
+    jerome_rtf_consumer:consume(Binary, ImageFun);
+parse(Binary, textile, ImageFun) when is_binary(Binary) ->
+    jerome_textile_consumer:consume(Binary, ImageFun).
 
 generate(Ast, Format) ->
     case Format of

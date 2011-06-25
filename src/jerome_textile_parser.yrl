@@ -36,7 +36,7 @@ Rootsymbol
 
 Elements -> '$empty' : [].
 Elements -> Elements TableRow : '$1' ++ ['$2'].
-Elements -> Elements NonEmptyTextElements : '$1' ++ ['$2'].
+Elements -> Elements NonEmptyTextElements : '$1' ++ '$2'.
 Elements -> Elements newline : '$1' ++ ['$2'].
 Elements -> Elements BlockTag : '$1' ++ ['$2'].
 

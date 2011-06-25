@@ -38,6 +38,7 @@ Elements -> Elements control_word : '$1' ++ ['$2'].
 Elements -> Elements control_bin : '$1' ++ ['$2'].
 Elements -> Elements control_char : '$1' ++ ['$2'].
 Elements -> Elements control_hex : '$1' ++ ['$2'].
+Elements -> Elements new_paragraph : '$1' ++ ['$2'].
 
 ListElements -> '$empty' : [].
 ListElements -> ListElements Group : '$1' ++ ['$2'].
