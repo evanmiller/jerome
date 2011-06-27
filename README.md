@@ -17,6 +17,6 @@ Available formats:
     Format     Read/Write?
     ------     -----------
     BBCode     Read + Write
-    HTML       Write-only
+    HTML       Read + Write
     RTF        Read + Write
     Textile    Read + Write

@@ -15,6 +15,8 @@ parse(Path, Format, ImageFun) when is_list(Path) ->
 
 parse(Binary, bbcode, ImageFun) when is_binary(Binary) ->
     jerome_bbcode_consumer:consume(Binary, ImageFun);
+parse(Binary, html, ImageFun) when is_binary(Binary) ->
+    jerome_html_consumer:consume(Binary, ImageFun);
 parse(Binary, rtf, ImageFun) when is_binary(Binary) ->
     jerome_rtf_consumer:consume(Binary, ImageFun);
 parse(Binary, textile, ImageFun) when is_binary(Binary) ->

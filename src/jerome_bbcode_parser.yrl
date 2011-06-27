@@ -2,6 +2,7 @@
 
 Nonterminals
         Elements
+        TaggedElement
         Table
         TableRows
         TableCells
@@ -47,17 +48,19 @@ Elements -> '$empty' : [].
 Elements -> Elements Table : '$1' ++ ['$2'].
 Elements -> Elements text : '$1' ++ ['$2'].
 Elements -> Elements newline : '$1' ++ ['$2'].
-Elements -> open_bold Elements close_bold : {bold, '$2'}.
-Elements -> open_italic Elements close_italic : {italic, '$2'}.
-Elements -> open_underline Elements close_underline : {underline, '$2'}.
-Elements -> open_superscript Elements close_superscript : {superscript, '$2'}.
-Elements -> open_subscript Elements close_subscript : {subscript, '$2'}.
-Elements -> open_url text close_url : {hyperlink, '$2'}.
-Elements -> open_url_equals url_value Elements close_url : {hyperlink, '$2', '$3'}.
-Elements -> open_img text close_img : {image, '$2'}.
-Elements -> open_quote Elements close_quote : {quote, '$2'}.
-Elements -> open_code Elements close_code : {code, '$2'}.
-Elements -> open_list ListItems close_list : {list, '$2'}.
+Elements -> Elements TaggedElement : '$1' ++ ['$2'].
+
+TaggedElement -> open_bold Elements close_bold : {bold, '$2'}.
+TaggedElement -> open_italic Elements close_italic : {italic, '$2'}.
+TaggedElement -> open_underline Elements close_underline : {underline, '$2'}.
+TaggedElement -> open_superscript Elements close_superscript : {superscript, '$2'}.
+TaggedElement -> open_subscript Elements close_subscript : {subscript, '$2'}.
+TaggedElement -> open_url text close_url : {hyperlink, '$2'}.
+TaggedElement -> open_url_equals url_value Elements close_url : {hyperlink, '$2', '$3'}.
+TaggedElement -> open_img text close_img : {image, '$2'}.
+TaggedElement -> open_quote Elements close_quote : {quote, '$2'}.
+TaggedElement -> open_code Elements close_code : {code, '$2'}.
+TaggedElement -> open_list ListItems close_list : {list, '$2'}.
 
 ListItems -> '$empty' : [].
 ListItems -> ListItems list_item Elements : '$1' ++ [{list_item, '$3'}].

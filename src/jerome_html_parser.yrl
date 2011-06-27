@@ -1,7 +1,8 @@
 % HTML parser
 
 Nonterminals
-        Elements.
+        Elements
+        TaggedElement.
 
 Terminals
         open_bold
@@ -25,9 +26,11 @@ Rootsymbol
 Elements -> '$empty' : [].
 Elements -> Elements text : '$1' ++ ['$2'].
 Elements -> Elements newline : '$1' ++ ['$2'].
-Elements -> open_bold Elements close_bold : {bold, '$2'}.
-Elements -> open_italic Elements close_italic : {italic, '$2'}.
-Elements -> open_underline Elements close_underline : {underline, '$2'}.
-Elements -> open_url Elements close_url : {hyperlink, '$1', '$2'}.
-Elements -> open_superscript Elements close_superscript : {superscript, '$1'}.
-Elements -> open_subscript Elements close_subscript : {subscript, '$1'}.
+Elements -> Elements TaggedElement : '$1' ++ ['$2'].
+
+TaggedElement -> open_bold Elements close_bold : {bold, '$2'}.
+TaggedElement -> open_italic Elements close_italic : {italic, '$2'}.
+TaggedElement -> open_underline Elements close_underline : {underline, '$2'}.
+TaggedElement -> open_url Elements close_url : {hyperlink, '$1', '$2'}.
+TaggedElement -> open_superscript Elements close_superscript : {superscript, '$1'}.
+TaggedElement -> open_subscript Elements close_subscript : {subscript, '$1'}.

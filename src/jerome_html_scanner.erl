@@ -77,11 +77,17 @@ scan([H|T], [{open_url, Pos, Value}|Scanned], {Row, Column}, in_url) ->
 scan([$<, $/, A, $> |T], Scanned, {Row, Column} = Pos, text) when A =:= $A; A =:= $a ->
     scan(T, [{close_url, Pos}|Scanned], {Row, Column} = Pos, text);
 scan("\r\n"++T, [{text, TPos, Text}|Scanned], {Row, _Column}, text) ->
-    scan(T, [{text, TPos, lists:reverse("\r\n", Text)}|Scanned], {Row + 1, 0}, text);
-scan("\r\n"++T, Scanned, {Row, _Column} = Pos, text) ->
-    scan(T, [{text, Pos, lists:reverse("\r\n")}|Scanned], {Row + 1, 0}, text);
+    scan(T, [{text, TPos, [$\ |Text]}|Scanned], {Row + 1, 0}, text);
+scan("\r\n"++T, [{text, TPos, " "++Text}|Scanned], {Row, _Column}, text) ->
+    scan(T, [{text, TPos, [$\ |Text]}|Scanned], {Row + 1, 0}, text);
+scan("\r\n"++T, Scanned, {Row, _Column}, text) ->
+    scan(T, Scanned, {Row + 1, 0}, text);
 scan("\n"++T, [{text, TPos, Text}|Scanned], {Row, _Column}, text) ->
-    scan(T, [{text, TPos, [$\n|Text]}|Scanned], {Row + 1, 0}, text);
+    scan(T, [{text, TPos, [$\ |Text]}|Scanned], {Row + 1, 0}, text);
+scan("\n"++T, [{text, TPos, " "++Text}|Scanned], {Row, _Column}, text) ->
+    scan(T, [{text, TPos, [$\ |Text]}|Scanned], {Row + 1, 0}, text);
+scan("\n"++T, Scanned, {Row, _Column}, text) ->
+    scan(T, Scanned, {Row + 1, 0}, text);
 scan("<"++T, Scanned, {Row, Column}, text) ->
     scan(T, Scanned, {Row, Column + 1}, in_tag);
 scan("\""++T, Scanned, {Row, Column}, in_tag) ->
@@ -94,8 +100,8 @@ scan("\'"++T, Scanned, {Row, Column}, in_single_quote) ->
     scan(T, Scanned, {Row, Column + 1}, in_tag);
 scan(">"++T, Scanned, {Row, Column}, in_tag) ->
     scan(T, Scanned, {Row, Column + 1}, text);
-scan([_H|T], Scanned, {Row, Column}, in_tag) ->
-    scan(T, Scanned, {Row, Column + 1}, in_tag);
+scan([_H|T], Scanned, {Row, Column}, State) when State =:= in_tag; State =:= in_double_quote; State =:= in_single_quote ->
+    scan(T, Scanned, {Row, Column + 1}, State);
 scan("&amp;"++T, Scanned, {Row, Column} = Pos, text) ->
     scan(T, append_text(Scanned, Pos, [$&]), {Row, Column + length("&amp;")}, text);
 scan("&quot;"++T, Scanned, {Row, Column} = Pos, text) ->
