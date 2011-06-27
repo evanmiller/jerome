@@ -10,7 +10,7 @@ scan([], Scanned, _, in_text) ->
     {ok, lists:reverse(
             lists:map(fun
                     ({bin, Pos, Binary}) ->
-                        {bin, Pos, lists:reverse(Binary)};
+                        {bin, Pos, list_to_binary(lists:reverse(Binary))};
                     ({text, Pos, Text}) ->
                         {text, Pos, lists:reverse(Text)};
                     ({control_word, Pos, RevCode}) ->
@@ -36,16 +36,13 @@ scan([], Scanned, _, in_text) ->
                         Token
                 end, Scanned))};
 
-scan([$\\, $b, $i, $n, D | T], Scanned, {Row, Column} = Pos, in_text) when D>=$0, D=<$9 ->
-    scan(T, [{control_bin, Pos, D-$0}|Scanned], {Row, Column + length("\\binX")}, in_bin_word);
-
 scan([H|T], [{control_bin, CPos, Len}|Scanned], {Row, Column}, in_bin_word) when H>=$0, H=<$9 ->
     scan(T, [{control_bin, CPos, Len * 10 + (H-$0)}|Scanned], {Row, Column + 1}, in_bin_word);
 
 scan(" " ++ T, [{control_bin, CPos, Len}|Scanned], {Row, Column} = Pos, in_bin_word) ->
     scan(T, [{bin, Pos, []}, {control_bin, CPos, Len}|Scanned], {Row, Column + 1}, {in_bin, Len});
 
-scan([H|T], [{bin, BPos, Binary}|Scanned], {Row, Column}, {in_bin, 0}) ->
+scan([H|T], [{bin, BPos, Binary}|Scanned], {Row, Column}, {in_bin, 1}) ->
     scan(T, [{bin, BPos, [H|Binary]}|Scanned], {Row, Column + 1}, in_text);
 
 scan([H|T], [{bin, BPos, Binary}|Scanned], {Row, Column}, {in_bin, BytesLeft}) ->
@@ -69,6 +66,9 @@ scan("\\:" ++ T, Scanned, {Row, Column} = Pos, _State) ->
     scan(T, [{control_char, Pos, ':'}|Scanned], {Row, Column + 2}, in_text);
 scan("\\|" ++ T, Scanned, {Row, Column} = Pos, _State) ->
     scan(T, [{control_char, Pos, '|'}|Scanned], {Row, Column + 2}, in_text);
+scan([$\\, $b, $i, $n, D | T], Scanned, {Row, Column} = Pos, _) when D>=$0, D=<$9 ->
+    scan(T, [{control_bin, Pos, D-$0}|Scanned], {Row, Column + length("\\binX")}, in_bin_word);
+
 scan([$\\, $', H1, H2 | T], Scanned, {Row, Column} = Pos, _State) when ((H1>=$0 andalso H1=<$9) orelse 
                                                                         (H1>=$A andalso H1 =<$Z)) andalso 
                                                                         ((H2>=$0 andalso H2 =<$9) orelse

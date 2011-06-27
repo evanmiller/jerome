@@ -41,6 +41,12 @@ write_attributed_text(Text, [bold|Rest]) ->
     ["<strong>", write_attributed_text(Text, Rest), "</strong>"];
 write_attributed_text(Text, [italic|Rest]) ->
     ["<em>", write_attributed_text(Text, Rest), "</em>"];
+write_attributed_text(Text, [underline|Rest]) ->
+    ["<u>", write_attributed_text(Text, Rest), "</u>"];
+write_attributed_text(Text, [superscript|Rest]) ->
+    ["<sup>", write_attributed_text(Text, Rest), "</sup>"];
+write_attributed_text(Text, [subscript|Rest]) ->
+    ["<sub>", write_attributed_text(Text, Rest), "</sub>"];
 write_attributed_text(Text, [{hyperlink, Destination}|Rest]) ->
     ["<a href=\"", Destination, "\">", write_attributed_text(Text, Rest), "</a>"];
 write_attributed_text(Text, []) ->
@@ -53,5 +59,9 @@ write_text([], Acc) ->
     lists:reverse(Acc);
 write_text([H|T], Acc) when H > 127 ->
     write_text(T, lists:reverse("&#"++integer_to_list(H)++";", Acc));
+write_text([$<|T], Acc) ->
+    write_text(T, lists:reverse("&lt;", Acc));
+write_text([$>|T], Acc) ->
+    write_text(T, lists:reverse("&gt;", Acc));
 write_text([H|T], Acc) ->
     write_text(T, [H|Acc]).

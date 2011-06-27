@@ -1,4 +1,4 @@
-% BBCode parser.
+% BBCode parser
 
 Nonterminals
         Elements
@@ -69,4 +69,3 @@ TableRows -> TableRows open_table_row TableCells close_table_row : '$1' ++ [{tab
 
 TableCells -> '$empty' : [].
 TableCells -> TableCells open_table_cell Elements close_table_cell : '$1' ++ [{table_cell, '$4'}].
-

@@ -5,6 +5,7 @@
 -export([consume/2]).
 
 recognize_word("fldinst") -> true;
+recognize_word("shppict") -> true;
 recognize_word(_) -> false.
 
 consume(Binary, ImageFun) when is_binary(Binary) ->
@@ -82,6 +83,10 @@ process_tree([{group, [{control_word, _, "field"},
                 {group, [{control_word, _, "fldrslt"}|Text]}]}|Rest], Acc, Context) ->
     {Ast, _} = process_tree(Text, [], Context#jerome_ctx{ hyperlink = lists:sublist(Hyperlink, 2, length(Hyperlink)-2)}),
     process_tree(Rest, lists:reverse(Ast, Acc), Context);
+process_tree([{group, [{control_word, _, "shppict"},
+                {group, [{control_word, _, "pict"}|Pict]}]}|Rest], Acc, Context) ->
+    {bin, _, Image} = hd(lists:reverse(Pict)),
+    process_tree(Rest, [{image, Image}|Acc], Context);
 process_tree([{list_item, _Bullet, Contents}|Rest], [{list, ListItems}|Acc], Context) ->
     {Ast, Context1} = process_tree(Contents, [], Context),
     process_tree(Rest, [{list, [{list_item, Ast}|ListItems]}|Acc], Context1);

@@ -38,6 +38,12 @@ write_attributed_text(Text, [bold|Rest]) ->
     ["[b]", write_attributed_text(Text, Rest), "[/b]"];
 write_attributed_text(Text, [italic|Rest]) ->
     ["[i]", write_attributed_text(Text, Rest), "[/i]"];
+write_attributed_text(Text, [underline|Rest]) ->
+    ["[u]", write_attributed_text(Text, Rest), "[/u]"];
+write_attributed_text(Text, [superscript|Rest]) ->
+    ["[sup]", write_attributed_text(Text, Rest), "[/sup]"];
+write_attributed_text(Text, [subscript|Rest]) ->
+    ["[sub]", write_attributed_text(Text, Rest), "[/sub]"];
 write_attributed_text(Text, [{hyperlink, Destination}|Rest]) ->
     ["[url=", Destination, "]", write_attributed_text(Text, Rest), "[/url]"];
 write_attributed_text(Text, []) ->
