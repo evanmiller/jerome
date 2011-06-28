@@ -17,10 +17,14 @@ Nonterminals
 Terminals
         block_tag
         punctuation
-        single_star
-        double_star
-        single_underscore
-        double_underscore
+        single_star_even
+        single_star_odd
+        double_star_even
+        double_star_odd
+        single_underscore_even
+        single_underscore_odd
+        double_underscore_even
+        double_underscore_odd
         newline
         text
         header_cell_start
@@ -28,15 +32,19 @@ Terminals
         url
         image
         double_quote
-        caret
-        tilde.
+        double_quote_open
+        double_quote_close
+        caret_even
+        caret_odd
+        tilde_even
+        tilde_odd.
 
 Rootsymbol
         Elements.
 
 Elements -> '$empty' : [].
 Elements -> Elements TableRow : '$1' ++ ['$2'].
-Elements -> Elements NonEmptyTextElements : '$1' ++ '$2'.
+Elements -> Elements TextElement : '$1' ++ ['$2'].
 Elements -> Elements newline : '$1' ++ ['$2'].
 Elements -> Elements BlockTag : '$1' ++ ['$2'].
 
@@ -65,20 +73,21 @@ TextElement -> text : '$1'.
 TextElement -> punctuation : '$1'.
 TextElement -> double_quote : '$1'.
 TextElement -> image : '$1'.
-TextElement -> single_star NonEmptyTextElements single_star : {strong, '$2'}.
-TextElement -> double_star NonEmptyTextElements double_star : {bold, '$2'}.
-TextElement -> single_underscore NonEmptyTextElements single_underscore : {em, '$2'}.
-TextElement -> double_underscore NonEmptyTextElements double_underscore : {italic, '$2'}.
-TextElement -> double_quote NonEmptyLinkElements double_quote url : {hyperlink, '$2', '$4'}.
-TextElement -> caret NonEmptyTextElements caret : {superscript, '$2'}.
-TextElement -> tilde NonEmptyTextElements tilde : {subscript, '$2'}.
+TextElement -> single_star_even NonEmptyTextElements single_star_odd : {strong, '$2'}.
+TextElement -> double_star_even NonEmptyTextElements double_star_odd : {bold, '$2'}.
+TextElement -> single_underscore_even NonEmptyTextElements single_underscore_odd : {em, '$2'}.
+TextElement -> double_underscore_even NonEmptyTextElements double_underscore_odd : {italic, '$2'}.
+TextElement -> double_quote_open NonEmptyLinkElements double_quote_close url : {hyperlink, '$2', '$4'}.
+TextElement -> caret_even NonEmptyTextElements caret_odd : {superscript, '$2'}.
+TextElement -> tilde_even NonEmptyTextElements tilde_odd : {subscript, '$2'}.
 
 NonEmptyLinkElements -> LinkElement : ['$1'].
 NonEmptyLinkElements -> NonEmptyLinkElements LinkElement : ['$1'].
 
 LinkElement -> text : '$1'.
 LinkElement -> punctuation : '$1'.
-LinkElement -> single_star NonEmptyLinkElements single_star : {strong, '$2'}.
-LinkElement -> double_star NonEmptyLinkElements double_star : {bold, '$2'}.
-LinkElement -> single_underscore NonEmptyLinkElements single_underscore : {em, '$2'}.
-LinkElement -> double_underscore NonEmptyLinkElements double_underscore : {italic, '$2'}.
+LinkElement -> single_star_even NonEmptyLinkElements single_star_odd : {strong, '$2'}.
+LinkElement -> double_star_even NonEmptyLinkElements double_star_odd : {bold, '$2'}.
+LinkElement -> single_underscore_even NonEmptyLinkElements single_underscore_odd : {em, '$2'}.
+LinkElement -> double_underscore_even NonEmptyLinkElements double_underscore_odd : {italic, '$2'}.
+

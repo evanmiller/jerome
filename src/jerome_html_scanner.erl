@@ -64,6 +64,8 @@ scan("<br>"++T, Scanned, {Row, Column} = Pos, text) ->
     scan(T, [{newline, Pos}|Scanned], {Row, Column + length("<br>")}, text);
 scan("<BR>"++T, Scanned, {Row, Column} = Pos, text) ->
     scan(T, [{newline, Pos}|Scanned], {Row, Column + length("<br>")}, text);
+scan("<div>"++T, Scanned, {Row, Column} = Pos, text) -> 
+    scan(T, [{newline, Pos}|Scanned], {Row, Column + length("<div>")}, text);
 scan("<a href=\""++T, Scanned, {Row, Column} = Pos, text) ->
     scan(T, [{open_url, Pos, ""}|Scanned], {Row, Column + length("<a href=\"")}, in_url);
 scan("<A HREF=\""++T, Scanned, {Row, Column} = Pos, text) ->
